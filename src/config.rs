@@ -530,33 +530,35 @@ impl Config {
     }
 
     fn try_lock(&self, file: File) -> Result<File> {
-        #[cfg(all(
-            not(miri),
-            any(windows, target_os = "linux", target_os = "macos")
-        ))]
-        {
-            use fs2::FileExt;
+        // #[cfg(all(
+        //     not(miri),
+        //     any(windows, target_os = "linux", target_os = "macos")
+        // ))]
+        // {
+        //     use fs2::FileExt;
 
-            let try_lock =
-                if cfg!(any(feature = "for-internal-testing-only", feature = "light_testing")) {
-                    // we block here because during testing
-                    // there are many filesystem race condition
-                    // that happen, causing locks to be held
-                    // for long periods of time, so we should
-                    // block to wait on reopening files.
-                    file.lock_exclusive()
-                } else {
-                    file.try_lock_exclusive()
-                };
+        //     let try_lock =
+        //         if cfg!(any(feature = "for-internal-testing-only", feature = "light_testing")) {
+        //             // we block here because during testing
+        //             // there are many filesystem race condition
+        //             // that happen, causing locks to be held
+        //             // for long periods of time, so we should
+        //             // block to wait on reopening files.
+        //             file.lock_exclusive()
+        //         } else {
+        //             file.try_lock_exclusive()
+        //         };
 
-            if try_lock.is_err() {
-                return Err(Error::Io(
-                    ErrorKind::Other,
-                    "could not acquire database file lock",
-                ));
-            }
-        }
+        //     if try_lock.is_err() {
+        //         return Err(Error::Io(
+        //             ErrorKind::Other,
+        //             "could not acquire database file lock",
+        //         ));
+        //     }
+        // }
 
+        // TODO(fy): better solution
+        eprintln!("sled: try lock");
         Ok(file)
     }
 
