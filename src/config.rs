@@ -577,36 +577,38 @@ impl Config {
     }
 
     fn try_lock(&self, file: File) -> Result<File> {
-        #[cfg(all(
-            not(miri),
-            any(windows, target_os = "linux", target_os = "macos")
-        ))]
-        {
-            use fs2::FileExt;
+        // #[cfg(all(
+        //     not(miri),
+        //     any(windows, target_os = "linux", target_os = "macos")
+        // ))]
+        // {
+        //     use fs2::FileExt;
 
-            let try_lock = if cfg!(feature = "testing") {
-                // we block here because during testing
-                // there are many filesystem race condition
-                // that happen, causing locks to be held
-                // for long periods of time, so we should
-                // block to wait on reopening files.
-                file.lock_exclusive()
-            } else {
-                file.try_lock_exclusive()
-            };
+        //     let try_lock = if cfg!(feature = "testing") {
+        //         // we block here because during testing
+        //         // there are many filesystem race condition
+        //         // that happen, causing locks to be held
+        //         // for long periods of time, so we should
+        //         // block to wait on reopening files.
+        //         file.lock_exclusive()
+        //     } else {
+        //         file.try_lock_exclusive()
+        //     };
 
-            if let Err(e) = try_lock {
-                return Err(Error::Io(io::Error::new(
-                    ErrorKind::Other,
-                    format!(
-                        "could not acquire lock on {:?}: {:?}",
-                        self.db_path().to_string_lossy(),
-                        e
-                    ),
-                )));
-            }
-        }
+        //     if let Err(e) = try_lock {
+        //         return Err(Error::Io(io::Error::new(
+        //             ErrorKind::Other,
+        //             format!(
+        //                 "could not acquire lock on {:?}: {:?}",
+        //                 self.db_path().to_string_lossy(),
+        //                 e
+        //             ),
+        //         )));
+        //     }
+        // }
 
+        // TODO(fy): better solution
+        // ignore advisory lock
         Ok(file)
     }
 

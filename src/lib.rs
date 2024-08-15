@@ -92,7 +92,7 @@
     trivial_casts,
     trivial_numeric_casts,
     unsafe_code,
-    unused_qualifications
+    // unused_qualifications
 )]
 #![deny(
     // over time, consider enabling the commented-out lints below
